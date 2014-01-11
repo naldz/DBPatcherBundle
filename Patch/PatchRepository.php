@@ -14,11 +14,10 @@ class PatchRepository
         $this->patchDir = $patchDir;
     }
     
-    public function getUnappliedPatches(PatchRegistry $patchRegistry, $finder=null)
+    public function getUnappliedPatches(PatchRegistry $patchRegistry, Finder $finder=null)
     {
         $registeredPatches = $patchRegistry->getRegisteredPatches();
-        
-        //retrieve all the files
+
         if (is_null($finder)) {
             $finder = $finder = new Finder();
         }
@@ -35,5 +34,15 @@ class PatchRepository
         }
 
         return $unappliedPatches;
+    }
+    
+    public function patchFileExists($patchFileName, Finder $finder=null)
+    {
+        if (is_null($finder)) {
+            $finder = $finder = new Finder();
+        }
+        $finder->files()->in($this->patchDir)->name($patchFileName);
+        
+        return $finder->count() > 0;
     }
 }

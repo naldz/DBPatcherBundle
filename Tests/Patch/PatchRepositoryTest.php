@@ -34,9 +34,6 @@ class PatchRepositoryTest extends \PHPUnit_Framework_TestCase
             ->method('in')
             ->with($this->testDir)
             ->will($this->returnSelf());
-        $finderMock->expects($this->once())
-            ->method('sortByName')
-            ->will($this->returnSelf());
         
         return $finderMock;
     }
@@ -57,11 +54,30 @@ class PatchRepositoryTest extends \PHPUnit_Framework_TestCase
 
         //mock the finder
         $finderMock = $this->createFinderMock(array('123.sql','456.sql','789.sql'));
+        $finderMock->expects($this->once())
+            ->method('sortByName')
+            ->will($this->returnSelf());
 
         $unappliedPatches = $this->patchRepository->getUnappliedPatches($patchRegistryMock, $finderMock);
         
-        $this->assertEquals(array('456.sql'), $unappliedPatches);
+        $this->assertEquals(array('456.sql'), $unappliedPatches);   
+    }
+    
+    public function testFileExists()
+    {
+        $finderMock1 = $this->createFinderMock(array());
+        $finderMock1->expects($this->once())
+            ->method('count')
+            ->will($this->returnValue(1));
+            
+        $this->assertTrue($this->patchRepository->patchFileExists('123.sql', $finderMock1));
         
+        $finderMock2 = $this->createFinderMock(array());
+        $finderMock2->expects($this->once())
+            ->method('count')
+            ->will($this->returnValue(0));
+            
+        $this->assertFalse($this->patchRepository->patchFileExists('123.sql', $finderMock2));
     }
 
 }

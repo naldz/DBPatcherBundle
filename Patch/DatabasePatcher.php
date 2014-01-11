@@ -2,21 +2,21 @@
 
 namespace Naldz\Bundle\DBPatcherBundle\Patch;
 
-use Naldz\Bundle\DBPatcherBundle\Patch\PatchRegistry;
 use Naldz\Bundle\DBPatcherBundle\Database\DatabaseCredential;
+use Naldz\Bundle\DBPatcherBundle\Patch\PatchRegistry;
 
 use Symfony\Component\Process\Process;
 
 class DatabasePatcher
 {
-    private $patchRegistry;
+    //private $patchRegistry;
     private $patchDir;
     private $mysqlBin;
     private $dbCred;
     
-    public function __construct(PatchRegistry $patchRegistry, DatabaseCredential $dbCred, $patchDir, $mysqlBin = '/usr/bin/mysql' )
+    public function __construct(DatabaseCredential $dbCred, $patchDir, $mysqlBin = '/usr/bin/mysql' )
     {
-        $this->patchRegistry = $patchRegistry;
+        //$this->patchRegistry = $patchRegistry;
         $this->dbCred = $dbCred;
         $this->patchDir = $patchDir;
         $this->mysqlBin = $mysqlBin;
@@ -46,6 +46,7 @@ class DatabasePatcher
              throw new \RuntimeException($process->getErrorOutput());
          }
          
-         $this->patchRegistry->registerPatch($patchFile);
+         return true;
+         //$this->patchRegistry->registerPatch($patchFile);
     }
 }

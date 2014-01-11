@@ -9,24 +9,21 @@ use Symfony\Component\Console\Output\NullOutput;
 
 class ApplyDatabasePatchCommandTest extends \PHPUnit_Framework_TestCase
 {
-    private $patchDir;
     private $application;
     private $definition;
     private $kernel;
     private $container;
     private $command;
     
+    private $patchRepository;
+    private $patchRegistry;
+    private $databasePatcher;
+    
     protected function setUp()
     {
 
         if (!class_exists('Symfony\Component\Console\Application')) {
             $this->markTestSkipped('Symfony Console is not available.');
-        }
-        
-        $this->patchDir = sys_get_temp_dir().'/db_patches';
-        //create the patchDir directory
-        if (!is_dir($this->patchDir)) {
-            mkdir($this->patchDir);
         }
 
         //mock the input definition    
@@ -54,10 +51,30 @@ class ApplyDatabasePatchCommandTest extends \PHPUnit_Framework_TestCase
         
         //mock the container
         $this->container = $this->getMock('Symfony\\Component\\DependencyInjection\\ContainerInterface');
-        $this->container->expects($this->once())
+        $this->container->expects($this->at(0))
             ->method('get')
             ->with('dbpatcher.patch_dir')
-            ->will($this->returnValue($this->patchDir));
+            ->will($this->returnValue('/path/to/patch'));
+            
+        $this->container->expects($this->at(1))
+            ->method('get')
+            ->with('dbpatcher.database_host')
+            ->will($this->returnValue('database_host'));
+        
+        $this->container->expects($this->at(2))
+            ->method('get')
+            ->with('dbpatcher.database_user')
+            ->will($this->returnValue('database_user'));
+            
+        $this->container->expects($this->at(3))
+            ->method('get')
+            ->with('dbpatcher.database_password')
+            ->will($this->returnValue('database_password'));
+            
+        $this->container->expects($this->at(4))
+            ->method('get')
+            ->with('dbpatcher.database_name')
+            ->will($this->returnValue('database_name'));
         
         //mock the application
         $this->application = $this->getMockBuilder('Symfony\\Bundle\\FrameworkBundle\\Console\\Application')
@@ -77,23 +94,122 @@ class ApplyDatabasePatchCommandTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->container));
 
         $this->command = new ApplyDatabasePatchCommand();
+        
+        $this->patchRepository = $this->getMockBuilder('Naldz\Bundle\DBPatcherBundle\Patch\PatchRepository')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->patchRegistry = $this->getMockBuilder('Naldz\Bundle\DBPatcherBundle\Patch\PatchRegistry')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->databasePatcher = $this->getMockBuilder('Naldz\Bundle\DBPatcherBundle\Patch\DatabasePatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+        
+        $this->command->setPatchRepository($this->patchRepository);
+        $this->command->setPatchRegistry($this->patchRegistry);
+        $this->command->setDatabasePatcher($this->databasePatcher);
+
         $this->command->setApplication($this->application);
-    }
-    
-    protected function tearDown()
-    {
-        if (is_dir($this->patchDir)) {
-            array_map('unlink', glob($this->patchDir.'/*'));
-            rmdir($this->patchDir);
-        }
     }
     
     public function testNonExistingPatchFileThrowsException()
     {
         $this->setExpectedException('RuntimeException');
-        
         $patchFileName = 'non-existing-patch.sql';
-        $this->command->run(new ArrayInput(array('patch-file' => $patchFileName)), new NullOutput());
+        $this->patchRepository
+            ->expects($this->once())
+            ->method('patchFileExists')
+            ->with($patchFileName)
+            ->will($this->returnValue(FALSE));
         
+        $this->command->run(new ArrayInput(array('patch-file' => $patchFileName)), new NullOutput());
     }
+    
+    public function testExistingPatch()
+    {
+        $patchFileName = 'existing-patch.sql';
+        $this->patchRepository
+            ->expects($this->once())
+            ->method('patchFileExists')
+            ->with($patchFileName)
+            ->will($this->returnValue(TRUE));
+        
+        $this->databasePatcher
+            ->expects($this->once())
+            ->method('applyPatch')
+            ->with($patchFileName)
+            ->will($this->returnValue(TRUE));
+            
+        $this->patchRegistry
+            ->expects($this->once())
+            ->method('registerPatch')
+            ->with($patchFileName);
+
+        $this->command->run(new ArrayInput(array('patch-file' => $patchFileName)), new NullOutput());
+    }
+    
+    public function testApplyingAllPatches()
+    {
+        $unappliedPatches = array('123.sql', '456.sql');
+        $this->patchRepository
+            ->expects($this->once())
+            ->method('getUnappliedPatches')
+            ->with($this->patchRegistry)
+            ->will($this->returnValue($unappliedPatches));
+            
+        $this->databasePatcher
+            ->expects($this->at(0))
+            ->method('applyPatch')
+            ->with($unappliedPatches[0])
+            ->will($this->returnValue(TRUE));
+            
+        $this->databasePatcher
+            ->expects($this->at(1))
+            ->method('applyPatch')
+            ->with($unappliedPatches[1])
+            ->will($this->returnValue(TRUE));
+            
+        $this->patchRegistry
+            ->expects($this->at(0))
+            ->method('registerPatch')
+            ->with($unappliedPatches[0]);
+            
+        $this->patchRegistry
+            ->expects($this->at(1))
+            ->method('registerPatch')
+            ->with($unappliedPatches[1]);
+
+        $this->command->run(new ArrayInput(array()), new NullOutput());
+    }
+    
+    public function testDefectivePatchShouldThrowException()
+    {
+        $this->setExpectedException('RuntimeException');
+        $unappliedPatches = array('123.sql', '456.sql', '789.sql');
+        $this->patchRepository
+            ->expects($this->once())
+            ->method('getUnappliedPatches')
+            ->with($this->patchRegistry)
+            ->will($this->returnValue($unappliedPatches));
+            
+        $this->databasePatcher
+            ->expects($this->at(0))
+            ->method('applyPatch')
+            ->with($unappliedPatches[0])
+            ->will($this->returnValue(TRUE));
+            
+        $this->databasePatcher
+            ->expects($this->at(1))
+            ->method('applyPatch')
+            ->with($unappliedPatches[1])
+            ->will($this->throwException(new \RuntimeException() ));
+            
+        $this->patchRegistry
+            ->expects($this->once())
+            ->method('registerPatch')
+            ->with($unappliedPatches[0]);
+
+        $this->command->run(new ArrayInput(array()), new NullOutput());
+    }
+    
 }

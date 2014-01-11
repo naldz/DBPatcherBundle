@@ -53,7 +53,7 @@ class ApplyDatabasePatchCommand extends ContainerAwareCommand
         
         $patchDir = $container->get('dbpatcher.patch_dir');
         $dbHost = $container->get('dbpatcher.database_host');
-        $dbUser = $contianer->get('dbpatcher.database_user');
+        $dbUser = $container->get('dbpatcher.database_user');
         $dbPass = $container->get('dbpatcher.database_password');
         $dbName = $container->get('dbpatcher.database_name');
         
@@ -75,53 +75,19 @@ class ApplyDatabasePatchCommand extends ContainerAwareCommand
 
         if ($input->hasArgument('patch-file') && !is_null($input->getArgument('patch-file'))) {            
             $patchFile = $input->getArgument('patch-file');
-            if (!$this->patchRepository->isPatchFileExists($patchFile)) {
+            if (!$this->patchRepository->patchFileExists($patchFile)) {
                 throw new \RuntimeException(sprintf('Patch file "%s" does not exists in directory %s', $patchFile, $patchDir));
             }
             $patchesToApply = array($input->getArgument('patch-file'));
         }
         else {
-            
-            //$patchesToApply = $htis->patchRepository->getUnappliedPatches();
             $patchesToApply = $this->patchRepository->getUnappliedPatches($this->patchRegistry);
-            //             
-            //             
-            //             
-            //             //get all file patches that are not yet applied
-            //             $finder = new Finder();
-            //             $finder->files()->in($patchDir);
-            //             
-            //             $sth = $con->prepare("SELECT * FROM db_patch;");
-            // $sth->execute();
-            // $appliedPatches = $sth->fetchAll();
-            // $appliedPatchesName = array();
-            // foreach ($appliedPatches as $iAppliedPatch) {
-            //  $appliedPatchesName[] = $iAppliedPatch['name'];
-            // }
-            // 
-            //             foreach ($finder as $file) {
-            //  $patchFileName = $file->getFilename();
-            // 
-            //  if (!in_array($patchFileName, $appliedPatchesName)) {
-            //      //apply the patch
-            //      $output->write("Applying database patch <comment>$patchFileName</comment>...");
-            // 
-            //      $sqlFilePathName = $file->getPathname();
-            //      $applyPatchProc = new Process("mysql -h$dbHost -u$dbUser -p$dbPass $dbName < $sqlFilePathName");
-            //      $applyPatchProc->run();
-            //      if (!$applyPatchProc->isSuccessful()) {
-            //          throw new IOException($applyPatchProc->getErrorOutput());
-            //      }
-            // 
-            //      $patchStmt = $con->prepare("INSERT INTO db_patch (name) VALUES (:name)");
-            //      $patchStmt->bindParam(':name', $patchFileName);
-            //      $patchStmt->execute();
-            // 
-            //      $patchStmt->closeCursor();
-            //      $output->writeln('done');
-            //  }
-            // }
-            //
+        }
+        
+        foreach ($patchesToApply as $index => $patchFileName) {
+            if ($this->databasePatcher->applyPatch($patchFileName)) {
+                $this->patchRegistry->registerPatch($patchFileName);
+            }
         }
         
 	}

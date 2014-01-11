@@ -25,7 +25,9 @@ class CreateDatabasePatchCommandTest extends \PHPUnit_Framework_TestCase
         
         $this->patchDir = sys_get_temp_dir().'/db_patches';
         //create the patchDir directory
-        mkdir($this->patchDir);
+        if (!is_dir($this->patchDir)) {
+            mkdir($this->patchDir);
+        }
         
         //mock the input definition    
         $this->definition = $this->getMockBuilder('Symfony\\Component\\Console\\Input\\InputDefinition')

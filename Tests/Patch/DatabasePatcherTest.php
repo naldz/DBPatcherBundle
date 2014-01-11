@@ -13,18 +13,12 @@ class DatabasePatcherTest extends \PHPUnit_Framework_TestCase
     private $dbUser = 'test_db_user';
     private $dbPass = 'test_db_pass';
     private $dbName = 'test_db_name';
-    
-    private $patchRegistryMock;
+
     private $dbCredMock;
     private $dbPatcher;
 
     protected function setUp()
     {
-        //mock the patchRegistry
-        $this->patchRegistryMock =$this->getMockBuilder('Naldz\\Bundle\\DBPatcherBundle\\Patch\\PatchRegistry')
-            ->disableOriginalConstructor()
-            ->getMock();
-
         //mock the dbCred
         $this->dbCredMock = $this->getMockBuilder('Naldz\Bundle\DBPatcherBundle\Database\DatabaseCredential')
             ->disableOriginalConstructor()
@@ -34,7 +28,7 @@ class DatabasePatcherTest extends \PHPUnit_Framework_TestCase
         $this->dbCredMock->expects($this->any())->method('getPassword')->will($this->returnValue($this->dbPass));
         $this->dbCredMock->expects($this->any())->method('getDatabaseName')->will($this->returnValue($this->dbName));
 
-        $this->dbPatcher = new DatabasePatcher($this->patchRegistryMock, $this->dbCredMock, $this->patchDir, $this->mysqlBin);
+        $this->dbPatcher = new DatabasePatcher($this->dbCredMock, $this->patchDir, $this->mysqlBin);
     }
     
     public function testPatching()
@@ -42,11 +36,6 @@ class DatabasePatcherTest extends \PHPUnit_Framework_TestCase
         $patchFile = '123.sql';
         $fullPatchFile = $this->patchDir.DIRECTORY_SEPARATOR.$patchFile;
         $cmdString = sprintf('%s -h%s -u%s -p%s %s < %s', $this->mysqlBin, $this->dbHost, $this->dbUser, $this->dbPass, $this->dbName, $fullPatchFile);
-
-        $this->patchRegistryMock->expects($this->once())
-            ->method('registerPatch')
-            ->with($patchFile);
-        
         //mock the process
         $processMock = $this->getMockBuilder('Symfony\Component\Process\Process')
             ->disableOriginalConstructor()
@@ -70,10 +59,6 @@ class DatabasePatcherTest extends \PHPUnit_Framework_TestCase
         $fullPatchFile = $this->patchDir.DIRECTORY_SEPARATOR.$patchFile;
         $cmdString = sprintf('%s -h%s -u%s -p%s %s < %s', $this->mysqlBin, $this->dbHost, $this->dbUser, $this->dbPass, $this->dbName, $fullPatchFile);
 
-        $this->patchRegistryMock
-            ->expects($this->never())
-            ->method('registerPatch');
-        
         //mock the process
         $processMock = $this->getMockBuilder('Symfony\Component\Process\Process')
             ->disableOriginalConstructor()
