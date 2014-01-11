@@ -1,6 +1,6 @@
 <?php
 
-namespace Naldz\DBPatcherBundle;
+namespace Naldz\Bundle\DBPatcherBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
