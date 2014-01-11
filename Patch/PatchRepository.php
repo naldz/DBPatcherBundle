@@ -34,8 +34,6 @@ class PatchRepository
             }
         }
 
-        
-
         return $unappliedPatches;
     }
 }

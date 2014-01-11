@@ -2,23 +2,18 @@
 
 namespace Naldz\Bundle\DBPatcherBundle\Patch;
 
+use Naldz\Bundle\DBPatcherBundle\Database\DatabaseCredential;
+
 class PatchRegistry
 {
-    private $dhHost;
-    private $dbUser;
-    private $dbPass;
-    private $dbName;
-
+    
+    private $dbCred;
     private $connection;
     private $pdoClass;
     
-    public function __construct($dbHost, $dbUser, $dbPass, $dbName)
+    public function __construct(DatabaseCredential $dbCred)
     {
-        $this->dbHost = $dbHost;
-        $this->dbUser = $dbUser;
-        $this->dbPass = $dbPass;
-        $this->dbName = $dbName;
-        
+        $this->dbCred = $dbCred;
         $this->pdoClass = '\PDO';
     }
 
@@ -30,8 +25,8 @@ class PatchRegistry
     public function getConnection()
     {
         if (is_null($this->connection)) {
-            $connString = sprintf('mysql:host=%s;dbname=%s', $this->dbHost, $this->dbName);
-            $this->connection = new $this->pdoClass($connString, $this->dbUser, $this->dbPass);
+            $connString = sprintf('mysql:host=%s;dbname=%s', $this->dbCred->getHost(), $this->dbCred->getDatabaseName());
+            $this->connection = new $this->pdoClass($connString, $this->dbCred->getUser(), $this->dbCred->getPassword());
         }
         return $this->connection;
     }

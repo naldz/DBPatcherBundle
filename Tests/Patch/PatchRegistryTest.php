@@ -6,18 +6,26 @@ use Naldz\Bundle\DBPatcherBundle\Patch\PatchRegistry;
 
 class PatchRegistryTest extends \PHPUnit_Framework_TestCase
 {
-    
     private $nameField = 'name';
     private $dateAppliedField = 'date_applied';
-    
+
     private $dbHost = 'test_db_host';
     private $dbUser = 'test_db_user';
     private $dbPass = 'test_db_pass';
     private $dbName = 'test_db_name';
-    
+
     protected function setUp()
     {
-        $this->patchRegistry = new PatchRegistry($this->dbHost, $this->dbUser, $this->dbPass, $this->dbName);
+        $dbCredMock = $this->getMockBuilder('Naldz\Bundle\DBPatcherBundle\Database\DatabaseCredential')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $dbCredMock->expects($this->any())->method('getHost')->will($this->returnValue($this->dbHost));
+        $dbCredMock->expects($this->any())->method('getUser')->will($this->returnValue($this->dbUser));
+        $dbCredMock->expects($this->any())->method('getPassword')->will($this->returnValue($this->dbPass));
+        $dbCredMock->expects($this->any())->method('getDatabaseName')->will($this->returnValue($this->dbName));
+
+        $this->patchRegistry = new PatchRegistry($dbCredMock);
     }
     
     public function testGetConnection()
