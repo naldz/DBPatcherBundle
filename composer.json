@@ -1,0 +1,16 @@
+{
+    "name": "naldz/dbpatcher-bundle",
+    "require": {
+        "php": ">=5.3.0",
+        "symfony/framework-bundle": "~2.1"
+    },
+    "require-dev": {
+        "symfony/console": "2.2.*",
+        "symfony/finder": "2.2.*",
+		"phpunit/phpunit": "3.7.*"
+	},
+	"autoload": {
+        "psr-0": { "Naldz\\Bundle\\DBPatcherBundle": "" }
+    },
+	"target-dir": "Naldz/Bundle/DBPatcherBundle"
+}
