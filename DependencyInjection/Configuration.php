@@ -11,7 +11,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('dbpatcher');
+        $rootNode = $treeBuilder->root('db_patcher');
 
         $rootNode
             ->children()

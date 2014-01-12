@@ -10,10 +10,10 @@ class ConfigurationFilterPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        $patchDir = $container->getParameterBag()->resolveValue($container->getParameter('dbpatcher.patch_dir'));
+        $patchDir = $container->getParameterBag()->resolveValue($container->getParameter('db_patcher.patch_dir'));
         $fs = new Filesystem();
         if (!$fs->exists($patchDir)) {
-            throw new \InvalidArgumentException(sprintf('The "dbpatcher.patch_dir" (%s) directory does not exist.', $patchDir));
+            throw new \InvalidArgumentException(sprintf('The "db_patcher.patch_dir" (%s) directory does not exist.', $patchDir));
         }
     }
 }

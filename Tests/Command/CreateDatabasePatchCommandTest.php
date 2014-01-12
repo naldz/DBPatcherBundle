@@ -56,7 +56,7 @@ class CreateDatabasePatchCommandTest extends \PHPUnit_Framework_TestCase
         $this->container = $this->getMock('Symfony\\Component\\DependencyInjection\\ContainerInterface');
         $this->container->expects($this->once())
             ->method('get')
-            ->with('dbpatcher.patch_dir')
+            ->with('db_patcher.patch_dir')
             ->will($this->returnValue($this->patchDir));
         
         //mock the application

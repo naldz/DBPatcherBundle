@@ -29,7 +29,7 @@ class DBPatcherExtensionTest extends \PHPUnit_Framework_TestCase
         $extension = new DBPatcherExtension();
         $options = $this->composeOptions();
         $options['patch_dir'] = '/nowhere/path';
-        $config = array('dbpatcher' => $options);
+        $config = array('db_patcher' => $options);
         $extension->load($config, $this->container);
         $this->container->compile();
     }

@@ -53,27 +53,27 @@ class ApplyDatabasePatchCommandTest extends \PHPUnit_Framework_TestCase
         $this->container = $this->getMock('Symfony\\Component\\DependencyInjection\\ContainerInterface');
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with('dbpatcher.patch_dir')
+            ->with('db_patcher.patch_dir')
             ->will($this->returnValue('/path/to/patch'));
             
         $this->container->expects($this->at(1))
             ->method('get')
-            ->with('dbpatcher.database_host')
+            ->with('db_patcher.database_host')
             ->will($this->returnValue('database_host'));
         
         $this->container->expects($this->at(2))
             ->method('get')
-            ->with('dbpatcher.database_user')
+            ->with('db_patcher.database_user')
             ->will($this->returnValue('database_user'));
             
         $this->container->expects($this->at(3))
             ->method('get')
-            ->with('dbpatcher.database_password')
+            ->with('db_patcher.database_password')
             ->will($this->returnValue('database_password'));
             
         $this->container->expects($this->at(4))
             ->method('get')
-            ->with('dbpatcher.database_name')
+            ->with('db_patcher.database_name')
             ->will($this->returnValue('database_name'));
         
         //mock the application
