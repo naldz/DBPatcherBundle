@@ -17,7 +17,7 @@ class CreateDatabasePatchCommand extends ContainerAwareCommand
     {
 		$this
 			->setName('dbpatcher:create-patch')
-			->setDescription('Create a patch file')
+			->setDescription('Create a unique database patch file')
 			->addArgument('filename', InputArgument::OPTIONAL, 'An optional filename to be set as the patch filename.')
 		;
     }
