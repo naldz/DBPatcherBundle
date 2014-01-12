@@ -1,6 +1,6 @@
 <?php
 
-namespace Naldz\Bundle\DBPatcherBundle\Tests\Patch;
+namespace Naldz\Bundle\DBPatcherBundle\Tests\Unit\Database;
 
 use Naldz\Bundle\DBPatcherBundle\Database\DatabaseCredential;
 

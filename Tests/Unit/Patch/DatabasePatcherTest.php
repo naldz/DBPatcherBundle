@@ -1,6 +1,6 @@
 <?php
 
-namespace Naldz\Bundle\DBPatcherBundle\Tests\Patch;
+namespace Naldz\Bundle\DBPatcherBundle\Tests\Unit\Patch;
 
 use Naldz\Bundle\DBPatcherBundle\Patch\DatabasePatcher;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Naldz\Bundle\DBPatcher\Tests\DependencyInjection;
+namespace Naldz\Bundle\DBPatcher\Tests\Unit\DependencyInjection;
 
 use Naldz\Bundle\DBPatcherBundle\DependencyInjection\DBPatcherExtension;
 use Naldz\Bundle\DBPatcherBundle\DependencyInjection\Compiler\ConfigurationFilterPass;

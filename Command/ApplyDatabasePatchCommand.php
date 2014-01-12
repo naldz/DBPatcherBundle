@@ -51,11 +51,11 @@ class ApplyDatabasePatchCommand extends ContainerAwareCommand
     {
         $container = $this->getContainer();
         
-        $patchDir = $container->get('db_patcher.patch_dir');
-        $dbHost = $container->get('db_patcher.database_host');
-        $dbUser = $container->get('db_patcher.database_user');
-        $dbPass = $container->get('db_patcher.database_password');
-        $dbName = $container->get('db_patcher.database_name');
+        $patchDir = $container->getParameter('db_patcher.patch_dir');
+        $dbHost = $container->getParameter('db_patcher.database_host');
+        $dbUser = $container->getParameter('db_patcher.database_user');
+        $dbPass = $container->getParameter('db_patcher.database_password');
+        $dbName = $container->getParameter('db_patcher.database_name');
         
         if (is_null($this->patchRepository)) {
             $this->patchRepository = new PatchRepository($patchDir);

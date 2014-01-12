@@ -1,6 +1,6 @@
 <?php
 
-namespace Naldz\Bundle\DBPatcherBundle\Tests\Command;
+namespace Naldz\Bundle\DBPatcherBundle\Tests\Unit\Command;
 
 use Naldz\Bundle\DBPatcherBundle\Command\ApplyDatabasePatchCommand;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -52,27 +52,27 @@ class ApplyDatabasePatchCommandTest extends \PHPUnit_Framework_TestCase
         //mock the container
         $this->container = $this->getMock('Symfony\\Component\\DependencyInjection\\ContainerInterface');
         $this->container->expects($this->at(0))
-            ->method('get')
+            ->method('getParameter')
             ->with('db_patcher.patch_dir')
             ->will($this->returnValue('/path/to/patch'));
             
         $this->container->expects($this->at(1))
-            ->method('get')
+            ->method('getParameter')
             ->with('db_patcher.database_host')
             ->will($this->returnValue('database_host'));
         
         $this->container->expects($this->at(2))
-            ->method('get')
+            ->method('getParameter')
             ->with('db_patcher.database_user')
             ->will($this->returnValue('database_user'));
             
         $this->container->expects($this->at(3))
-            ->method('get')
+            ->method('getParameter')
             ->with('db_patcher.database_password')
             ->will($this->returnValue('database_password'));
             
         $this->container->expects($this->at(4))
-            ->method('get')
+            ->method('getParameter')
             ->with('db_patcher.database_name')
             ->will($this->returnValue('database_name'));
         

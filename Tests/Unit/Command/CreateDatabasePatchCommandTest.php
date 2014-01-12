@@ -1,6 +1,6 @@
 <?php
 
-namespace Naldz\Bundle\DBPatcherBundle\Tests\Command;
+namespace Naldz\Bundle\DBPatcherBundle\Tests\Unit\Command;
 
 use Naldz\Bundle\DBPatcherBundle\Command\CreateDatabasePatchCommand;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -55,7 +55,7 @@ class CreateDatabasePatchCommandTest extends \PHPUnit_Framework_TestCase
         //mock the container
         $this->container = $this->getMock('Symfony\\Component\\DependencyInjection\\ContainerInterface');
         $this->container->expects($this->once())
-            ->method('get')
+            ->method('getParameter')
             ->with('db_patcher.patch_dir')
             ->will($this->returnValue($this->patchDir));
         

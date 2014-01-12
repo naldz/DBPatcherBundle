@@ -24,7 +24,7 @@ class CreateDatabasePatchCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $patchDir = $this->getContainer()->get('db_patcher.patch_dir');
+        $patchDir = $this->getContainer()->getParameter('db_patcher.patch_dir');
         
         
         if ($input->hasArgument('filename') && !is_null($input->getArgument('filename'))) {
