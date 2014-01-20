@@ -14,6 +14,7 @@ use Symfony\Component\Finder\Finder;
 use Naldz\Bundle\DBPatcherBundle\Patch\PatchRepository;
 use Naldz\Bundle\DBPatcherBundle\Patch\PatchRegistry;
 use Naldz\Bundle\DBPatcherBundle\Patch\DatabasePatcher;
+use Naldz\Bundle\DBPatcherBundle\Database\DatabaseCredential;
 
 class ApplyDatabasePatchCommand extends ContainerAwareCommand
 {
@@ -57,16 +58,18 @@ class ApplyDatabasePatchCommand extends ContainerAwareCommand
         $dbPass = $container->getParameter('db_patcher.database_password');
         $dbName = $container->getParameter('db_patcher.database_name');
         
+        $dbCred = new DatabaseCredential($dbHost, $dbUser, $dbPass, $dbName);
+        
         if (is_null($this->patchRepository)) {
             $this->patchRepository = new PatchRepository($patchDir);
         }
         
         if (is_null($this->patchRegistry)) {
-            $this->patchRegistry = new PatchRegistry($dbHost, $dbUser, $dbPass, $dbName);
+            $this->patchRegistry = new PatchRegistry($dbCred);
         }
         
         if (is_null($this->databasePatcher)) {
-            $this->databasePatcher = new DatabasePatcher($dbHost, $dbUser, $dbPass, $dbName);
+            $this->databasePatcher = new DatabasePatcher($dbCred, $patchDir);
         }
         
         $fs = new FileSystem();
