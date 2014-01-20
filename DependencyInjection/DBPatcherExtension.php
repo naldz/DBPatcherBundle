@@ -23,9 +23,9 @@ class DBPatcherExtension extends Extension
 
         $container->setParameter('db_patcher.patch_dir', $config['patch_dir']);
         $container->setParameter('db_patcher.database_host', $config['database_host']);
-        $container->setParameter('db_patcher.database_user', $config['database_host']);
-        $container->setParameter('db_patcher.database_password', $config['database_host']);
-        $container->setParameter('db_patcher.database_name', $config['database_host']);
+        $container->setParameter('db_patcher.database_user', $config['database_user']);
+        $container->setParameter('db_patcher.database_password', $config['database_password']);
+        $container->setParameter('db_patcher.database_name', $config['database_name']);
 
     }
 }
