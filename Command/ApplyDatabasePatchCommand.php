@@ -86,11 +86,24 @@ class ApplyDatabasePatchCommand extends ContainerAwareCommand
         else {
             $patchesToApply = $this->patchRepository->getUnappliedPatches($this->patchRegistry);
         }
-        
+
         foreach ($patchesToApply as $index => $patchFileName) {
+            $output->write("Applying patch $patchFileName...");
             if ($this->databasePatcher->applyPatch($patchFileName)) {
+                $output->write('registering...');
                 $this->patchRegistry->registerPatch($patchFileName);
+                $output->writeln('done.');
             }
+            else {
+                $output->writeln('ERROR!');
+            }
+        }
+
+        if (count($patchesToApply)) {
+            $output->writeln('Done applying patches.');
+        }
+        else {
+            $outpute->writeln('No availble patch to apply.');
         }
         
 	}
