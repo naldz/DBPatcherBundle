@@ -6,6 +6,7 @@ use Naldz\Bundle\DBPatcherBundle\Command\ApplyDatabasePatchCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 class ApplyDatabasePatchCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -211,5 +212,41 @@ class ApplyDatabasePatchCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->command->run(new ArrayInput(array()), new NullOutput());
     }
+
+    public function testOutputOfSuccessfullPatching()
+    {
+        $unappliedPatches = array('123.sql' => true, '456.sql' => true);
+        $unappliedPatchesClone = $unappliedPatches;
+
+        $this->patchRepository
+            ->expects($this->once())
+            ->method('getUnappliedPatches')
+            ->with($this->patchRegistry)
+            ->will($this->returnValue(array_keys($unappliedPatches)));
+
+        $this->databasePatcher
+            ->expects($this->exactly(2))
+            ->method('applyPatch')
+            ->with($this->anything())
+            ->will($this->returnCallback(function($patchName) use ($unappliedPatches) {
+                return $unappliedPatches[$patchName];
+            }));
+
+        $this->patchRegistry
+            ->expects($this->exactly(2))
+            ->method('registerPatch');
+
+        $bufferedOutput = new BufferedOutput();
+        $this->command->run(new ArrayInput(array()), $bufferedOutput);
+        $expectedDisplayOutput = $bufferedOutput->fetch();
+
+        $expectedDisplayOutput = "Applying patch 123.sql...registering...done.
+Applying patch 456.sql...registering...done.
+Done applying patches.";
+
+        $this->assertEquals($expectedDisplayOutput, $expectedDisplayOutput);
+
+    }
+
     
 }
