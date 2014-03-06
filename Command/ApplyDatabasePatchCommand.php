@@ -103,7 +103,7 @@ class ApplyDatabasePatchCommand extends ContainerAwareCommand
             $output->writeln('Done applying patches.');
         }
         else {
-            $outpute->writeln('No availble patch to apply.');
+            $output->writeln('No availble patch to apply.');
         }
         
 	}
