@@ -1,1 +1,3 @@
 vendor/*
+TestHelper/App/cache/*
+TestHelper/App/logs/*

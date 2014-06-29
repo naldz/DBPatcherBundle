@@ -1,8 +1,8 @@
 <?php
 
-namespace Naldz\Bundle\DBPatcherBundle\Tests\Unit\Patch;
+namespace Naldz\Bundle\DBPatcherBundle\Tests\Unit\Patcher;
 
-use Naldz\Bundle\DBPatcherBundle\Patch\PatchRepository;
+use Naldz\Bundle\DBPatcherBundle\Patcher\PatchRepository;
 
 class PatchRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -10,11 +10,6 @@ class PatchRepositoryTest extends \PHPUnit_Framework_TestCase
     private $patchRepository;
     
     private $testDir = '/path/to/dir';
-    
-    protected function setUp()
-    {
-        $this->patchRepository = new PatchRepository($this->testDir);
-    }
     
     protected function createFinderMock($fileNames=array())
     {
@@ -29,7 +24,8 @@ class PatchRepositoryTest extends \PHPUnit_Framework_TestCase
             
         $finderMock->expects($this->once())
             ->method('files')
-            ->will($this->returnSelf());            
+            ->will($this->returnSelf());
+
         $finderMock->expects($this->once())
             ->method('in')
             ->with($this->testDir)
@@ -41,9 +37,11 @@ class PatchRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testGettingOfUnappliedPatches()
     {
         //mock the PatchRegistry
-        $patchRegistryMock =$this->getMockBuilder('Naldz\\Bundle\\DBPatcherBundle\\Patch\\PatchRegistry')
+        $patchRegistryMock =$this->getMockBuilder('Naldz\\Bundle\\DBPatcherBundle\\Patcher\\PatchRegistry')
             ->disableOriginalConstructor()
             ->getMock();
+
+        $patchRepository = new PatchRepository($this->testDir, $patchRegistryMock);
 
         $patchRegistryMock->expects($this->once())
             ->method('getRegisteredPatches')
@@ -58,26 +56,33 @@ class PatchRepositoryTest extends \PHPUnit_Framework_TestCase
             ->method('sortByName')
             ->will($this->returnSelf());
 
-        $unappliedPatches = $this->patchRepository->getUnappliedPatches($patchRegistryMock, $finderMock);
+        $unappliedPatches = $patchRepository->getUnappliedPatches($finderMock);
         
         $this->assertEquals(array('456.sql'), $unappliedPatches);   
     }
     
     public function testFileExists()
     {
+        $patchRegistryMock =$this->getMockBuilder('Naldz\\Bundle\\DBPatcherBundle\\Patcher\\PatchRegistry')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $patchRepository = new PatchRepository($this->testDir, $patchRegistryMock);
+
+
         $finderMock1 = $this->createFinderMock(array());
         $finderMock1->expects($this->once())
             ->method('count')
             ->will($this->returnValue(1));
             
-        $this->assertTrue($this->patchRepository->patchFileExists('123.sql', $finderMock1));
+        $this->assertTrue($patchRepository->patchFileExists('123.sql', $finderMock1));
         
         $finderMock2 = $this->createFinderMock(array());
         $finderMock2->expects($this->once())
             ->method('count')
             ->will($this->returnValue(0));
             
-        $this->assertFalse($this->patchRepository->patchFileExists('123.sql', $finderMock2));
+        $this->assertFalse($patchRepository->patchFileExists('123.sql', $finderMock2));
     }
 
 }

@@ -1,22 +1,33 @@
 <?php
 
-namespace Naldz\Bundle\DBPatcherBundle\Patch;
+namespace Naldz\Bundle\DBPatcherBundle\Patcher;
 
-use Naldz\Bundle\DBPatcherBundle\Patch\PatchRegistry;
+use Naldz\Bundle\DBPatcherBundle\Patcher\PatchRegistry;
+use Naldz\Bundle\DBPatcherBundle\Patcher\DrivableInterface;
+use Naldz\Bundle\DBPatcherBundle\Patcher\Driver\PatcherDriverInterface;
+
 use Symfony\Component\Finder\Finder;
 
-class PatchRepository
+class PatchRepository implements DrivableInterface
 {
     protected $patchDir;
-    
-    public function __construct($patchDir)
+    protected $patchRegistry;
+    protected $patcherDriver;
+
+    public function __construct($patchDir, PatchRegistry $patchRegistry)
     {
         $this->patchDir = $patchDir;
+        $this->patchRegistry = $patchRegistry;
     }
     
-    public function getUnappliedPatches(PatchRegistry $patchRegistry, Finder $finder=null)
+    public function setDriver(PatcherDriverInterface $driver)
     {
-        $registeredPatches = $patchRegistry->getRegisteredPatches();
+        $this->patcherDriver = $patcherDriver;
+    }
+
+    public function getUnappliedPatches(Finder $finder=null)
+    {
+        $registeredPatches = $this->patchRegistry->getRegisteredPatches();
 
         if (is_null($finder)) {
             $finder = $finder = new Finder();

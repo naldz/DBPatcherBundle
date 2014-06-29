@@ -1,48 +1,33 @@
 <?php
 
-namespace Naldz\Bundle\DBPatcherBundle\Tests\Unit\Patch;
+namespace Naldz\Bundle\DBPatcherBundle\Tests\Unit\Patcher;
 
-use Naldz\Bundle\DBPatcherBundle\Patch\PatchRegistry;
+use Naldz\Bundle\DBPatcherBundle\Patcher\PatchRegistry;
 
 class PatchRegistryTest extends \PHPUnit_Framework_TestCase
 {
     private $nameField = 'name';
     private $dateAppliedField = 'date_applied';
-
-    private $dbHost = 'test_db_host';
-    private $dbUser = 'test_db_user';
-    private $dbPass = 'test_db_pass';
-    private $dbName = 'test_db_name';
-
-    protected function setUp()
+    
+    public function createDriver($con = null)
     {
-        $dbCredMock = $this->getMockBuilder('Naldz\Bundle\DBPatcherBundle\Database\DatabaseCredential')
+        $mock = $this->getMock('Naldz\\Bundle\\DBPatcherBundle\\Patcher\\Driver\\PatcherDriverInterface');
+
+        if (!is_null($con)) {
+            $mock->expects($this->once())
+                ->method('getConnection')
+                ->will($this->returnValue($con));
+        }
+
+        return $mock;
+    }
+
+    public function testGettingOfRegisteredPatches()
+    {
+        $pdoMock =$this->getMockBuilder('Naldz\\Bundle\\DBPatcherBundle\\TestHelper\\Stub\\PDOStub')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $dbCredMock->expects($this->any())->method('getHost')->will($this->returnValue($this->dbHost));
-        $dbCredMock->expects($this->any())->method('getUser')->will($this->returnValue($this->dbUser));
-        $dbCredMock->expects($this->any())->method('getPassword')->will($this->returnValue($this->dbPass));
-        $dbCredMock->expects($this->any())->method('getDatabaseName')->will($this->returnValue($this->dbName));
-
-        $this->patchRegistry = new PatchRegistry($dbCredMock);
-    }
-    
-    public function testGetConnection()
-    {
-        $this->patchRegistry->setPdoClass('Naldz\Bundle\DBPatcherBundle\TestHelper\Stub\PDOStub');
-        $conn = $this->patchRegistry->getConnection();
-        
-        $this->assertInstanceOf('Naldz\Bundle\DBPatcherBundle\TestHelper\Stub\PDOStub', $conn);
-        $this->assertEquals('mysql:host=test_db_host;dbname=test_db_name', $conn->getConnectionString());
-        $this->assertEquals($this->dbUser, $conn->getUser());
-        $this->assertEquals($this->dbPass, $conn->getPassword());
-
-    }
-    
-    public function testGettingOfRegisteredPatches()
-    {
-        
         $stmtMock = $this->getMock('Naldz\\Bundle\\DBPatcherBundle\\TestHelper\\Stub\\PDOStatementStub');
         $stmtMock->expects($this->once())
             ->method('fetchAll')
@@ -53,15 +38,16 @@ class PatchRegistryTest extends \PHPUnit_Framework_TestCase
         )));
         $stmtMock->expects($this->once())->method('closeCursor');
         
-        $pdoMock =$this->getMockBuilder('Naldz\\Bundle\\DBPatcherBundle\\TestHelper\\Stub\\PDOStub')
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $pdoMock->expects($this->once())
             ->method('prepare')
             ->will($this->returnValue($stmtMock));
 
-        $patches = $this->patchRegistry->getRegisteredPatches($pdoMock);
+        $driver = $this->createDriver($pdoMock);
+
+        $patchRegistry = new PatchRegistry();
+        $patchRegistry->setDriver($driver);
+
+        $patches = $patchRegistry->getRegisteredPatches();
         
         $expectedPatches = array(
             '123.sql' => '2013-01-01 00:00:01',
@@ -71,7 +57,7 @@ class PatchRegistryTest extends \PHPUnit_Framework_TestCase
         
         $this->assertEquals($expectedPatches, $patches);
     }
-    
+
     public function testRegisteringOfPatch()
     {
         $patchName = 'patch123.sql';
@@ -91,9 +77,14 @@ class PatchRegistryTest extends \PHPUnit_Framework_TestCase
         $pdoMock->expects($this->once())
             ->method('prepare')
             ->will($this->returnValue($stmtMock));
-            
-        $this->patchRegistry->registerPatch($patchName, $pdoMock);
+
+        $driver = $this->createDriver($pdoMock);
+
+        $patchRegistry = new PatchRegistry();
+        $patchRegistry->setDriver($driver);
+
+        $patchRegistry->registerPatch($patchName);
         
     }
-    
+
 }

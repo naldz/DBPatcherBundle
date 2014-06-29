@@ -19,10 +19,6 @@ use Naldz\Bundle\DBPatcherBundle\Database\DatabaseCredential;
 class ApplyDatabasePatchCommand extends ContainerAwareCommand
 {
     
-    protected $patchRepository;
-    protected $patchRegistry;
-    protected $databasePatcher;
-    
 	protected function configure()
     {
 		$this
@@ -32,79 +28,49 @@ class ApplyDatabasePatchCommand extends ContainerAwareCommand
 		;
     }
     
-    /*** Dependency Injection ***/
-    public function setPatchRepository(PatchRepository $patchRepository)
-    {
-        $this->patchRepository = $patchRepository;
-    }
-
-    public function setPatchRegistry(PatchRegistry $patchRegistry)
-    {
-        $this->patchRegistry = $patchRegistry;
-    }
-
-    public function setDatabasePatcher(DatabasePatcher $databasePatcher)
-    {
-        $this->databasePatcher = $databasePatcher;
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $container = $this->getContainer();
-        
+
+        $patchRepository = $container->get('db_patcher.patch_repository');
+        $patchRegistry = $container->get('db_patcher.patch_registry');
+        $databasePatcher = $container->get('db_patcher.database_patcher');
+
         $patchDir = $container->getParameter('db_patcher.patch_dir');
-        $dbHost = $container->getParameter('db_patcher.database_host');
-        $dbUser = $container->getParameter('db_patcher.database_user');
-        $dbPass = $container->getParameter('db_patcher.database_password');
-        $dbName = $container->getParameter('db_patcher.database_name');
-        
-        $dbCred = new DatabaseCredential($dbHost, $dbUser, $dbPass, $dbName);
-        
-        if (is_null($this->patchRepository)) {
-            $this->patchRepository = new PatchRepository($patchDir);
-        }
-        
-        if (is_null($this->patchRegistry)) {
-            $this->patchRegistry = new PatchRegistry($dbCred);
-        }
-        
-        if (is_null($this->databasePatcher)) {
-            $this->databasePatcher = new DatabasePatcher($dbCred, $patchDir);
-        }
         
         $fs = new FileSystem();
 
         $patchesToApply = array();
 
-        if ($input->hasArgument('patch-file') && !is_null($input->getArgument('patch-file'))) {            
+        if ($input->hasArgument('patch-file') && !is_null($input->getArgument('patch-file'))) {
             $patchFile = $input->getArgument('patch-file');
-            if (!$this->patchRepository->patchFileExists($patchFile)) {
+            if (!$patchRepository->patchFileExists($patchFile)) {
                 throw new \RuntimeException(sprintf('Patch file "%s" does not exists in directory %s', $patchFile, $patchDir));
             }
             $patchesToApply = array($input->getArgument('patch-file'));
         }
         else {
-            $patchesToApply = $this->patchRepository->getUnappliedPatches($this->patchRegistry);
+            $patchesToApply = $patchRepository->getUnappliedPatches();
         }
 
         foreach ($patchesToApply as $index => $patchFileName) {
             $output->write("Applying patch $patchFileName...");
-            if ($this->databasePatcher->applyPatch($patchFileName)) {
+            if ($databasePatcher->applyPatch($patchFileName)) {
                 $output->write('registering...');
-                $this->patchRegistry->registerPatch($patchFileName);
+                $patchRegistry->registerPatch($patchFileName);
                 $output->writeln('done.');
             }
             else {
                 $output->writeln('ERROR!');
             }
         }
-
+        
         if (count($patchesToApply)) {
             $output->writeln('Done applying patches.');
         }
         else {
             $output->writeln('No availble patch to apply.');
         }
-        
+
 	}
 }

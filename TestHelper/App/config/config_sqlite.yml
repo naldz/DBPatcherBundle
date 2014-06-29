@@ -1,0 +1,26 @@
+parameters:
+    locale: en
+    secret: ThisTokenIsNotSoSecretChangeIt
+
+framework:
+    #esi:             ~
+    #translator:      { fallback: "%locale%" }
+    secret:          "%secret%"
+    form:            ~
+    csrf_protection: ~
+    validation:      { enable_annotations: true }
+    default_locale:  "%locale%"
+    trusted_hosts:   ~
+    trusted_proxies: ~
+    session:
+        # handler_id set to null will use default session handler from php.ini
+        handler_id:  ~
+    fragments:       ~
+    http_method_override: true
+
+
+#DBPatcher configuration
+db_patcher:
+    patch_dir: "%kernel.root_dir%/../Fixture/patch"
+    dsn: "sqlite:%kernel.root_dir%/../Fixture/sqlite/testdb.sqlite"
+    driver_client_path: '/opt/local/bin/sqlite3'

@@ -1,6 +1,6 @@
 <?php
 
-namespace Naldz\Bundle\DBPatcher\Tests\Unit\DependencyInjection;
+namespace Naldz\Bundle\DBPatcherBundle\Tests\Unit\DependencyInjection;
 
 use Naldz\Bundle\DBPatcherBundle\DependencyInjection\DBPatcherExtension;
 use Naldz\Bundle\DBPatcherBundle\DependencyInjection\Compiler\ConfigurationFilterPass;
@@ -24,12 +24,12 @@ class DBPatcherExtensionTest extends \PHPUnit_Framework_TestCase
 
     public function testInvalidPatchDirOptionShouldThrowException()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException('Symfony\Component\Config\Definition\Exception\InvalidConfigurationException');
         $this->container->addCompilerPass(new ConfigurationFilterPass());
         $extension = new DBPatcherExtension();
-        $options = $this->composeOptions();
-        $options['patch_dir'] = '/nowhere/path';
+        $options = array('patch_dir' => '/path/nowhere', 'dsn' => 'mysql:dsn');
         $config = array('db_patcher' => $options);
+        
         $extension->load($config, $this->container);
         $this->container->compile();
     }
@@ -41,8 +41,10 @@ class DBPatcherExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Symfony\Component\Config\Definition\Exception\InvalidConfigurationException');
         $this->container->addCompilerPass(new ConfigurationFilterPass());
+
         $extension = new DBPatcherExtension();
         $config = array($this->composeOptions(array($option)));
+
         $extension->load($config, $this->container);
         $this->container->compile();
     }
@@ -51,10 +53,7 @@ class DBPatcherExtensionTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array('patch_dir'),
-            array('database_host'),
-            array('database_user'),
-            array('database_password'),
-            array('database_name')
+            array('dsn')
         );
     }
     
@@ -62,12 +61,10 @@ class DBPatcherExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $completeOptions = array(
             'patch_dir' => sys_get_temp_dir(),
-            'database_host' => 'database_host_option',
-            'database_user' => 'database_user_option',
-            'database_password' => 'database_password_option',
-            'database_name' => 'database_name_option'
+            'dsn' => 'sample:dsn'
         );
         
         return array_diff_key($completeOptions, array_flip($lessOptions));
     }
+
 }

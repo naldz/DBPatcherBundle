@@ -8,7 +8,7 @@ class PDOStub
     private $user;
     private $pass;
     
-    public function __construct($conString, $user, $password)
+    public function __construct($conString, $user = null, $password = null)
     {
         $this->conString = $conString;
         $this->user = $user;
