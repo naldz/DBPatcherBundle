@@ -37,7 +37,8 @@ class PatchRegistry implements DrivableInterface
     public function registerPatch($patchName)
     {
         $con = $this->patcherDriver->getConnection();
-        $stmt = $con->prepare("INSERT INTO db_patch (name) VALUES (:name)");
-        $stmt->execute(array(':name' => $patchName));
+        //$stmt = $con->prepare("INSERT INTO db_patch (name) VALUES (:name)");
+        //$stmt->execute(array(':name' => $patchName));
+        $con->exec(sprintf('INSERT INTO db_patch (name) VALUES ("%s");', $patchName));
     }
 }

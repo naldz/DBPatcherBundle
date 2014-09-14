@@ -19,10 +19,12 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->appRoot = __DIR__.'/../../../TestHelper/App';
-
         $this->kernel = new AppKernel($this->env, true);
         $this->application = new Application($this->kernel);
         $this->commandExecutor = new CommandExecutor($this->application);
+
+        //boot the kernel
+        $this->kernel->boot();
     }
 
 }

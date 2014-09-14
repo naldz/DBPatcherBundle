@@ -43,11 +43,16 @@ class ApplyDatabasePatchCommand extends ContainerAwareCommand
         $patchesToApply = array();
 
         if ($input->hasArgument('patch-file') && !is_null($input->getArgument('patch-file'))) {
-            $patchFile = $input->getArgument('patch-file');
-            if (!$patchRepository->patchFileExists($patchFile)) {
-                throw new \RuntimeException(sprintf('Patch file "%s" does not exists in directory %s', $patchFile, $patchDir));
+
+            $patchFiles = explode(' ', $input->getArgument('patch-file'));
+            $patchesToApply = array();
+            foreach ($patchFiles as $iPatchFile) {
+                if (!$patchRepository->patchFileExists($iPatchFile)) {
+                    throw new \RuntimeException(sprintf('Patch file "%s" does not exists in directory %s', $iPatchFile, $patchDir));
+                }
+                $patchesToApply[] = $iPatchFile;
             }
-            $patchesToApply = array($input->getArgument('patch-file'));
+
         }
         else {
             $patchesToApply = $patchRepository->getUnappliedPatches();

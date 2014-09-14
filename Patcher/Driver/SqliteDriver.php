@@ -31,6 +31,7 @@ class SqliteDriver implements PatcherDriverInterface
             $connString = sprintf('sqlite:%s', $creds['database_file']);
 
             $this->connection = new $pdoClass($connString);
+            $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         }
 
         return $this->connection;
