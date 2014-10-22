@@ -3,14 +3,12 @@
 namespace Naldz\Bundle\DBPatcherBundle\Tests\Functional\Command;
 
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Naldz\Bundle\DBPatcherBundle\Tests\Functional\Command\CommandTestCase;
 
 abstract class ApplyDatabasePatchCommandTestCase extends CommandTestCase
 {
 
     protected $patchFixtureDir;
-    protected $patchDir;
 
     abstract protected function getConnection();
 
@@ -19,19 +17,10 @@ abstract class ApplyDatabasePatchCommandTestCase extends CommandTestCase
         parent::setUp();
 
         $this->patchFixtureDir = $this->appRoot.'/../Fixture/patch';
-        $this->patchDir = $this->kernel->getContainer()->getParameter('db_patcher.patch_dir');
-
-        //remove the cache files from the app
-        $this->fs = new FileSystem();
-        $this->fs->remove(array($this->appRoot.'/cache', $this->appRoot.'/logs'));
 
         //clean up the database
         $pdoCon = $this->getConnection();
         $pdoCon->exec('DELETE FROM db_patch WHERE 1');
-
-        //clear patch directory
-        $finder = $finder = new Finder();
-        $this->fs->remove($finder->files()->in($this->patchDir)->sortByName());
 
     }
 

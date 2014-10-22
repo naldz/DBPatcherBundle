@@ -32,6 +32,14 @@ class PDOStub
     
     public function prepare()
     {
-        
     }
+    
+    public function setAttribute($attr, $value) 
+    {
+    }
+
+    public function exec($sql) 
+    {
+    }
+
 }

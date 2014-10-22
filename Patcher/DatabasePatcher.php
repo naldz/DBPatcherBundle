@@ -30,4 +30,9 @@ class DatabasePatcher implements DrivableInterface
         return true;
     }
 
+    public function resetDatabase($initFile = null)
+    {
+        $this->patcherDriver->resetDatabase($initFile);
+    }
+
 }

@@ -46,18 +46,61 @@ class SqliteDriver implements PatcherDriverInterface
             $this->clientBin,
             $creds['database_file']
         );
+        
+        if (is_null($process)) {
+            $process = new Process($cmdString);
+        }
          
-         if (is_null($process)) {
-             $process = new Process($cmdString);
-         }
-         
-         $process->run();
-         
-         if (!$process->isSuccessful()) {
-             throw new \RuntimeException($process->getErrorOutput());
-         }
+        $process->run();
+        
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException($process->getErrorOutput());
+        }
 
-         return true;
+        return true;
+    }
+
+    public function resetDatabase($initFile = null, $rmProc = null, $createProc = null, $initProc = null)
+    {
+
+        $creds = $this->getParsedCreds();
+
+        //remove the current database
+        if (is_null($rmProc)) {
+            $rmProc = new Process(sprintf('rm -f %s', $creds['database_file']));
+        }
+        
+        $rmProc->run();
+        
+        if (!$rmProc->isSuccessful()) {
+            throw new \RuntimeException($rmProc->getErrorOutput());
+        }
+
+        //recreate the database file
+        $patchTableSql = 'CREATE TABLE "db_patch" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" varchar(50) NOT NULL, "date_applied" DEFAULT CURRENT_TIMESTAMP);';
+
+        if (is_null($createProc)) {
+            $createProc = new Process(sprintf("%s %s '%s'", $this->clientBin, $creds['database_file'], $patchTableSql));
+        }
+
+        $createProc->run();
+
+        if (!$createProc->isSuccessful()) {
+            throw new \RuntimeException($createProc->getErrorOutput());
+        }
+
+        //initialize the database file
+        if (!is_null($initFile)) {
+            if (is_null($initProc)) {
+                $initProc = new Process(sprintf('%s %s < %s', $this->clientBin, $creds['database_file'], $initFile));
+            }
+            
+            $initProc->run();
+            if (!$initProc->isSuccessful()) {
+                throw new \RuntimeException($initProc->getErrorOutput());
+            }
+        }
+
     }
 
     protected function getParsedCreds()

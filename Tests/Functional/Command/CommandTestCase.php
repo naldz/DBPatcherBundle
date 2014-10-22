@@ -4,8 +4,10 @@ namespace Naldz\Bundle\DBPatcherBundle\Tests\Functional\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Naldz\Bundle\DBPatcherBundle\TestHelper\App\AppKernel;
 use Naldz\Bundle\DBPatcherBundle\TestHelper\CommandExecutor\CommandExecutor;
+
 
 abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -15,6 +17,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
     protected $application;
     protected $commandExecutor;
     protected $env;
+    protected $patchDir;
 
     public function setUp()
     {
@@ -25,6 +28,18 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
 
         //boot the kernel
         $this->kernel->boot();
+
+
+        //perform initialization
+        $this->patchDir = $this->kernel->getContainer()->getParameter('db_patcher.patch_dir');
+
+        //remove the cache files from the app
+        $this->fs = new FileSystem();
+        $this->fs->remove(array($this->appRoot.'/cache', $this->appRoot.'/logs'));
+
+        //clear patch directory
+        $finder = $finder = new Finder();
+        $this->fs->remove($finder->files()->in($this->patchDir)->sortByName());
     }
 
 }

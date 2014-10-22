@@ -18,4 +18,11 @@ interface PatcherDriverInterface
      * @return PDO
      */
     public function getConnection();
+
+    /**
+     * Resets the database into its initial state
+     *
+     * @return PDO
+     */
+    public function resetDatabase($initFile = null);
 }

@@ -62,21 +62,21 @@ class PatchRegistryTest extends \PHPUnit_Framework_TestCase
     {
         $patchName = 'patch123.sql';
         
-        $stmtMock = $this->getMockBuilder('Naldz\Bundle\DBPatcherBundle\TestHelper\Stub\PDOStatementStub')
-            ->disableOriginalConstructor()
-            ->getMock();
+        // $stmtMock = $this->getMockBuilder('Naldz\Bundle\DBPatcherBundle\TestHelper\Stub\PDOStatementStub')
+        //     ->disableOriginalConstructor()
+        //     ->getMock();
             
-        $stmtMock->expects($this->once())
-            ->method('execute')
-            ->with(array(':name' => $patchName));
+        // $stmtMock->expects($this->once())
+        //     ->method('execute')
+        //     ->with(array(':name' => $patchName));
 
         $pdoMock =$this->getMockBuilder('Naldz\\Bundle\\DBPatcherBundle\\TestHelper\\Stub\\PDOStub')
             ->disableOriginalConstructor()
             ->getMock();
         
         $pdoMock->expects($this->once())
-            ->method('prepare')
-            ->will($this->returnValue($stmtMock));
+            ->method('exec');
+            //->will($this->returnValue($stmtMock));
 
         $driver = $this->createDriver($pdoMock);
 
