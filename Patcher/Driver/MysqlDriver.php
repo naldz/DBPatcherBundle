@@ -72,4 +72,8 @@ class MysqlDriver implements PatcherDriverInterface
         return $this->creds;
     }
 
+    public function resetDatabase($initFile = null) 
+    {
+
+    }
 }

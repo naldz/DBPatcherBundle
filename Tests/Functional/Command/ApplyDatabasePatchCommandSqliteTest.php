@@ -1,6 +1,6 @@
 <?php
 
-namespace Naldz\Bundle\DBPatcherBundle\Tests\Unit\Command;
+namespace Naldz\Bundle\DBPatcherBundle\Tests\Functional\Command;
 
 use Naldz\Bundle\DBPatcherBundle\Tests\Functional\Command\ApplyDatabasePatchCommandTestCase;
 use Symfony\Component\Filesystem\Filesystem;
