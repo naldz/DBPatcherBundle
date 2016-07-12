@@ -106,4 +106,9 @@ class SqliteDriverTest extends \PHPUnit_Framework_TestCase
         $sqliteDriver->resetDatabase('/path/to/patch/file', $rmProcMock, $createProcMock, $initProcMock);
 
     }
+
+    public function testInit()
+    {
+        
+    }
 }

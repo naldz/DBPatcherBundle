@@ -23,4 +23,4 @@ framework:
 db_patcher:
     patch_dir: "%kernel.root_dir%/dbpatch"
     dsn: "mysql:root:password@localhost\dbpatcher"
-    driver_client_path: '/usr/bin/mysql'
+    driver_client_path: '/usr/local/mysql/bin/mysql'
