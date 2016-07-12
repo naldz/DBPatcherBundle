@@ -60,48 +60,48 @@ class SqliteDriver implements PatcherDriverInterface
         return true;
     }
 
-    public function resetDatabase($initFile = null, $rmProc = null, $createProc = null, $initProc = null)
-    {
+    // public function resetDatabase($initFile = null, $rmProc = null, $createProc = null, $initProc = null)
+    // {
 
-        $creds = $this->getParsedCreds();
+    //     $creds = $this->getParsedCreds();
 
-        //remove the current database
-        if (is_null($rmProc)) {
-            $rmProc = new Process(sprintf('rm -f %s', $creds['database_file']));
-        }
+    //     //remove the current database
+    //     if (is_null($rmProc)) {
+    //         $rmProc = new Process(sprintf('rm -f %s', $creds['database_file']));
+    //     }
         
-        $rmProc->run();
+    //     $rmProc->run();
         
-        if (!$rmProc->isSuccessful()) {
-            throw new \RuntimeException($rmProc->getErrorOutput());
-        }
+    //     if (!$rmProc->isSuccessful()) {
+    //         throw new \RuntimeException($rmProc->getErrorOutput());
+    //     }
 
-        //recreate the database file
-        $patchTableSql = 'CREATE TABLE "db_patch" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" varchar(50) NOT NULL, "date_applied" DEFAULT CURRENT_TIMESTAMP);';
+    //     //recreate the database file
+    //     $patchTableSql = 'CREATE TABLE "db_patch" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" varchar(50) NOT NULL, "date_applied" DEFAULT CURRENT_TIMESTAMP);';
 
-        if (is_null($createProc)) {
-            $createProc = new Process(sprintf("%s %s '%s'", $this->clientBin, $creds['database_file'], $patchTableSql));
-        }
+    //     if (is_null($createProc)) {
+    //         $createProc = new Process(sprintf("%s %s '%s'", $this->clientBin, $creds['database_file'], $patchTableSql));
+    //     }
 
-        $createProc->run();
+    //     $createProc->run();
 
-        if (!$createProc->isSuccessful()) {
-            throw new \RuntimeException($createProc->getErrorOutput());
-        }
+    //     if (!$createProc->isSuccessful()) {
+    //         throw new \RuntimeException($createProc->getErrorOutput());
+    //     }
 
-        //initialize the database file
-        if (!is_null($initFile)) {
-            if (is_null($initProc)) {
-                $initProc = new Process(sprintf('%s %s < %s', $this->clientBin, $creds['database_file'], $initFile));
-            }
+    //     //initialize the database file
+    //     if (!is_null($initFile)) {
+    //         if (is_null($initProc)) {
+    //             $initProc = new Process(sprintf('%s %s < %s', $this->clientBin, $creds['database_file'], $initFile));
+    //         }
             
-            $initProc->run();
-            if (!$initProc->isSuccessful()) {
-                throw new \RuntimeException($initProc->getErrorOutput());
-            }
-        }
+    //         $initProc->run();
+    //         if (!$initProc->isSuccessful()) {
+    //             throw new \RuntimeException($initProc->getErrorOutput());
+    //         }
+    //     }
 
-    }
+    // }
 
     protected function getParsedCreds()
     {
@@ -110,6 +110,25 @@ class SqliteDriver implements PatcherDriverInterface
         }
 
         return $this->creds;
+    }
+
+    public function init($initProc=null)
+    {
+        $creds = $this->getParsedCreds();
+
+        //recreate the database file
+        $patchTableSql = 'CREATE TABLE IF NOT EXISTS "db_patch" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" varchar(50) NOT NULL, "date_applied" DEFAULT CURRENT_TIMESTAMP);';
+
+        if (is_null($initProc)) {
+            $initProc = new Process(sprintf("%s %s '%s'", $this->clientBin, $creds['database_file'], $patchTableSql));
+        }
+
+        $initProc->run();
+
+        if (!$initProc->isSuccessful()) {
+            throw new \RuntimeException($initProc->getErrorOutput());
+        }
+
     }
 
 }

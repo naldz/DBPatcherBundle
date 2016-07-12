@@ -63,47 +63,49 @@ class SqliteDriverTest extends \PHPUnit_Framework_TestCase
         $sqliteDriver->applyPatch('/path/to/patch/file', $processMock);
     }
 
-    public function testResetDatabase()
-    {
-        $creds = array(
-            'prefix'        => 'sqlite',
-            'database_file' => '/path/to/dbfile.sqlite',
-        );
+    // public function testResetDatabase()
+    // {
+    //     $creds = array(
+    //         'prefix'        => 'sqlite',
+    //         'database_file' => '/path/to/dbfile.sqlite',
+    //     );
 
-        $dsnParseMock = $this->createDsnParserMock($creds);
-        $sqliteDriver = new SqliteDriver($dsnParseMock, 'dsn', '/usr/bin/sqlite3');
+    //     $dsnParseMock = $this->createDsnParserMock($creds);
+    //     $sqliteDriver = new SqliteDriver($dsnParseMock, 'dsn', '/usr/bin/sqlite3');
 
-        $connection = $sqliteDriver->getConnection('Naldz\\Bundle\\DBPatcherBundle\\TestHelper\\Stub\\PDOStub');
+    //     $connection = $sqliteDriver->getConnection('Naldz\\Bundle\\DBPatcherBundle\\TestHelper\\Stub\\PDOStub');
 
-        $rmProcMock = $this->getMockBuilder('Symfony\Component\Process\Process')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $rmProcMock->expects($this->once())
-            ->method('run');
+    //     $rmProcMock = $this->getMockBuilder('Symfony\Component\Process\Process')
+    //         ->disableOriginalConstructor()
+    //         ->getMock();
+    //     $rmProcMock->expects($this->once())
+    //         ->method('run');
             
-        $rmProcMock->expects($this->once())
-            ->method('isSuccessful')
-            ->will($this->returnValue(true));
+    //     $rmProcMock->expects($this->once())
+    //         ->method('isSuccessful')
+    //         ->will($this->returnValue(true));
 
-        $createProcMock = $this->getMockBuilder('Symfony\Component\Process\Process')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $createProcMock->expects($this->once())
-            ->method('run');
-        $createProcMock->expects($this->once())
-            ->method('isSuccessful')
-            ->will($this->returnValue(true));
+    //     $createProcMock = $this->getMockBuilder('Symfony\Component\Process\Process')
+    //         ->disableOriginalConstructor()
+    //         ->getMock();
+    //     $createProcMock->expects($this->once())
+    //         ->method('run');
+    //     $createProcMock->expects($this->once())
+    //         ->method('isSuccessful')
+    //         ->will($this->returnValue(true));
 
-        $initProcMock = $this->getMockBuilder('Symfony\Component\Process\Process')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $initProcMock->expects($this->once())
-            ->method('run');
-        $initProcMock->expects($this->once())
-            ->method('isSuccessful')
-            ->will($this->returnValue(true));
+    //     $initProcMock = $this->getMockBuilder('Symfony\Component\Process\Process')
+    //         ->disableOriginalConstructor()
+    //         ->getMock();
+    //     $initProcMock->expects($this->once())
+    //         ->method('run');
+    //     $initProcMock->expects($this->once())
+    //         ->method('isSuccessful')
+    //         ->will($this->returnValue(true));
 
-        $sqliteDriver->resetDatabase('/path/to/patch/file', $rmProcMock, $createProcMock, $initProcMock);
+    //     $sqliteDriver->resetDatabase('/path/to/patch/file', $rmProcMock, $createProcMock, $initProcMock);
 
-    }
+    // }
+
+
 }

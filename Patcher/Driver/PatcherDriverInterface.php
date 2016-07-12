@@ -24,5 +24,5 @@ interface PatcherDriverInterface
      *
      * @return PDO
      */
-    public function resetDatabase($initFile = null);
+    public function init($initProc = null);
 }
