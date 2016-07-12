@@ -71,30 +71,30 @@ class MysqlDriverTest extends \PHPUnit_Framework_TestCase
         $mysqlDriver->applyPatch('/path/to/patch/file', $processMock);
     }
 
-    public function testInit()
-    {
-        $creds = array(
-            'prefix'    => 'mysql',
-            'user'      => 'my_user',
-            'password'  => 'my_pass',
-            'host'      => 'example.com',
-            'database'  => 'my_db'
-        );
+    // public function testInit()
+    // {
+    //     $creds = array(
+    //         'prefix'    => 'mysql',
+    //         'user'      => 'my_user',
+    //         'password'  => 'my_pass',
+    //         'host'      => 'example.com',
+    //         'database'  => 'my_db'
+    //     );
 
-        $dsnParserMock = $this->createDsnParserMock($creds);
-        $mysqlDriver = new MysqlDriver($dsnParserMock, 'dsn', '/usr/bin/mysql');
+    //     $dsnParserMock = $this->createDsnParserMock($creds);
+    //     $mysqlDriver = new MysqlDriver($dsnParserMock, 'dsn', '/usr/bin/mysql');
 
-        $connection = $mysqlDriver->getConnection('Naldz\\Bundle\\DBPatcherBundle\\TestHelper\\Stub\\PDOStub');
+    //     $connection = $mysqlDriver->getConnection('Naldz\\Bundle\\DBPatcherBundle\\TestHelper\\Stub\\PDOStub');
 
-        $processMock = $this->getMockBuilder('Symfony\Component\Process\Process')
-            ->disableOriginalConstructor()
-            ->getMock();
+    //     $processMock = $this->getMockBuilder('Symfony\Component\Process\Process')
+    //         ->disableOriginalConstructor()
+    //         ->getMock();
 
-        $processMock->expects($this->once())
-            ->method('isSuccessful')
-            ->will($this->returnValue(true));
+    //     $processMock->expects($this->once())
+    //         ->method('isSuccessful')
+    //         ->will($this->returnValue(true));
 
-        $mysqlDriver->init($processMock);
-    }
+    //     $mysqlDriver->init($processMock);
+    // }
 
 }
