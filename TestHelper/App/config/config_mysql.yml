@@ -1,26 +1,8 @@
-parameters:
-    locale: en
-    secret: ThisTokenIsNotSoSecretChangeIt
-
-framework:
-    #esi:             ~
-    #translator:      { fallback: "%locale%" }
-    secret:          "%secret%"
-    form:            ~
-    csrf_protection: ~
-    validation:      { enable_annotations: true }
-    default_locale:  "%locale%"
-    trusted_hosts:   ~
-    trusted_proxies: ~
-    session:
-        # handler_id set to null will use default session handler from php.ini
-        handler_id:  ~
-    fragments:       ~
-    http_method_override: true
-
+imports:
+    - { resource: config.yml }
 
 #DBPatcher configuration
 db_patcher:
     patch_dir: "%kernel.root_dir%/dbpatch"
-    dsn: "mysql:root:password@localhost\dbpatcher"
+    dsn: 'mysql:root:password@localhost\dbpatcher'
     driver_client_path: '/usr/local/mysql/bin/mysql'

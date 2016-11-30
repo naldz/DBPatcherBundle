@@ -12,11 +12,11 @@ services:
 
     db_patcher.mysql_patcher_driver:
         class: Naldz\Bundle\DBPatcherBundle\Patcher\Driver\MysqlDriver
-        arguments: ["@db_patcher.mysql_dsn_parser", "%db_patcher.dsn%", "%db_patcher.driver_client_path%"]
+        arguments: ['@db_patcher.mysql_dsn_parser', '%db_patcher.dsn%', '%db_patcher.driver_client_path%']
 
     db_patcher.sqlite_patcher_driver:
        class: Naldz\Bundle\DBPatcherBundle\Patcher\Driver\SqliteDriver
-       arguments: ["@db_patcher.sqlite_dsn_parser", "%db_patcher.dsn%", "%db_patcher.driver_client_path%"]
+       arguments: ['@db_patcher.sqlite_dsn_parser', '%db_patcher.dsn%', '%db_patcher.driver_client_path%']
 
     # driver_factory:
     #     class: Naldz\Bundle\DBPatcherBundle\Patcher\DriverFactory
@@ -24,18 +24,18 @@ services:
 
     db_patcher.driver_configurator:
         class: Naldz\Bundle\DBPatcherBundle\Patcher\DriverConfigurator
-        arguments: ["%db_patcher.dsn%", { mysql: @db_patcher.mysql_patcher_driver, sqlite: @db_patcher.sqlite_patcher_driver}]
+        arguments: ['%db_patcher.dsn%', { mysql: '@db_patcher.mysql_patcher_driver', sqlite: '@db_patcher.sqlite_patcher_driver'}]
 
     db_patcher.patch_registry:
         class: Naldz\Bundle\DBPatcherBundle\Patcher\PatchRegistry
-        arguments: ["%db_patcher.patch_dir%"]
-        configurator: ["@db_patcher.driver_configurator", configure]
+        arguments: ['%db_patcher.patch_dir%']
+        configurator: ['@db_patcher.driver_configurator', configure]
 
     db_patcher.patch_repository:
         class: Naldz\Bundle\DBPatcherBundle\Patcher\PatchRepository
-        arguments: ["%db_patcher.patch_dir%", "@db_patcher.patch_registry"]
+        arguments: ['%db_patcher.patch_dir%', '@db_patcher.patch_registry']
 
     db_patcher.database_patcher:
         class: Naldz\Bundle\DBPatcherBundle\Patcher\DatabasePatcher
-        arguments: ["%db_patcher.patch_dir%"]
+        arguments: ['%db_patcher.patch_dir%']
         configurator: ["@db_patcher.driver_configurator", configure]
