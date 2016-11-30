@@ -2,7 +2,7 @@
     "name": "naldz/dbpatcher-bundle",
     "require": {
         "php": ">=5.3.0",
-        "symfony/framework-bundle": "~2.1"
+        "symfony/framework-bundle": "~3.0"
     },
     "require-dev": {
         "symfony/console": "2.4.*",
