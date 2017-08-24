@@ -27,6 +27,7 @@ class DBPatcherExtension extends Extension
         $container->setParameter('db_patcher.patch_dir', $config['patch_dir']);
         $container->setParameter('db_patcher.dsn', $config['dsn']);
         $container->setParameter('db_patcher.driver_client_path', $config['driver_client_path']);
+        $container->setParameter('db_patcher.timeout', $config['timeout']);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

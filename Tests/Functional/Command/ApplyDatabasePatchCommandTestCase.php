@@ -53,4 +53,11 @@ abstract class ApplyDatabasePatchCommandTestCase extends CommandTestCase
         $this->assertEquals(1, count($stmt->fetchAll()));
     }
 
+    public function testConfigurationTimeout()
+    {
+        $this->usePatches(array('001.sql' => 'sleep_patch.sql'));
+        $output = $this->commandExecutor->execute(array('command' => 'dbpatcher:apply-patch', 'patch-file' => '001.sql'));
+        $this->assertRegExp('/Applying patch 001.sql...registering...done/', $output);
+    }
+
 }
