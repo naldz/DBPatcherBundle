@@ -12,15 +12,17 @@ class MysqlDriver implements PatcherDriverInterface
     private $clientBin;
     private $dsn;
     private $dsnParser;
+    private $timeout;
 
     private $connection;
     private $creds;
 
-    public function __construct($dsnParser, $dsn, $clientBin = '/usr/bin/mysql')
+    public function __construct($dsnParser, $dsn, $clientBin = '/usr/bin/mysql', $timeout)
     {
         $this->clientBin = $clientBin;
         $this->dsn = $dsn;
         $this->dsnParser = $dsnParser;
+        $this->timeout = $timeout;
     }
 
     public function getConnection($pdoClass = '\PDO')
@@ -49,9 +51,10 @@ class MysqlDriver implements PatcherDriverInterface
             $creds['database'],
             $fullPatchFile
         );
-         
+
         if (is_null($process)) {
             $process = new Process($cmdString);
+            $process->setTimeout($this->timeout);
         }
 
         $process->run();

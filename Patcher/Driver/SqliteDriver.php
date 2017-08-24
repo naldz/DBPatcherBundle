@@ -12,15 +12,17 @@ class SqliteDriver implements PatcherDriverInterface
     private $clientBin;
     private $dsn;
     private $dsnParser;
+    private $timeout;
 
     private $connection;
     private $creds;
 
-    public function __construct($dsnParser, $dsn, $clientBin = '/usr/bin/sqlite3')
+    public function __construct($dsnParser, $dsn, $clientBin = '/usr/bin/sqlite3', $timeout)
     {
         $this->clientBin = $clientBin;
         $this->dsn = $dsn;
         $this->dsnParser = $dsnParser;
+        $this->timeout = $timeout;
     }
 
     public function getConnection($pdoClass = '\PDO')
@@ -49,6 +51,7 @@ class SqliteDriver implements PatcherDriverInterface
         
         if (is_null($process)) {
             $process = new Process($cmdString);
+            $process->setTimeout($this->timeout);
         }
          
         $process->run();
