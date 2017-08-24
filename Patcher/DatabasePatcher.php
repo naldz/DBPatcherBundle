@@ -39,5 +39,4 @@ class DatabasePatcher implements DrivableInterface
     {
         $this->patcherDriver->init();
     }
-
 }

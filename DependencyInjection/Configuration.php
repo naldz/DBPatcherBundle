@@ -27,6 +27,9 @@ class Configuration implements ConfigurationInterface
                     ->isRequired()
                     ->cannotBeEmpty()
                 ->end()
+                ->integerNode('timeout')
+                    ->defaultValue(null)
+                ->end()
             ->end();
 
         return $treeBuilder;
